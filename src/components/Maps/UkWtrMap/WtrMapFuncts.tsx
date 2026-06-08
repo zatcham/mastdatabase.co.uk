@@ -3,12 +3,12 @@ import React from 'react'
 import type { WtrFilters, FilterOptions } from './types'
 import { GeoJSON } from 'react-leaflet'
 function FilterSelect({
-                        id,
-                        label,
-                        value,
-                        options,
-                        onChange,
-                      }: {
+  id,
+  label,
+  value,
+  options,
+  onChange,
+}: {
   id: string
   label: string
   value: string
@@ -17,15 +17,19 @@ function FilterSelect({
 }) {
   return (
     <>
-      <label className="wtr-filter-panel__label" htmlFor={id}>{label}</label>
-    <select id={id} className="wtr-filter-panel__input" value={value} onChange={e => onChange(e.target.value)}>
-  <option value="">All</option>
-  {options.map(option => (
-    <option key={option} value={option}>{option}</option>
-  ))}
-  </select>
-  </>
-)
+      <label className="wtr-filter-panel__label" htmlFor={id}>
+        {label}
+      </label>
+      <select id={id} className="wtr-filter-panel__input" value={value} onChange={e => onChange(e.target.value)}>
+        <option value="">All</option>
+        {options.map(option => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </>
+  )
 }
 
 function selectLicence(map: MapLibreMap, selectedRef: React.MutableRefObject<string>, licenceNumber: string) {
@@ -40,13 +44,7 @@ function uniqueLicenceFeatures(features: readonly GeoJSON.Feature[]): GeoJSON.Fe
   const unique: GeoJSON.Feature[] = []
   features.forEach(feature => {
     const p = (feature.properties ?? {}) as Record<string, unknown>
-    const key = [
-      p.licenceNumber,
-      p.stationType,
-      p.frequency,
-      p.antennaAzimuth,
-      p.antennaType,
-    ].map(value => String(value ?? '')).join('|')
+    const key = [p.licenceNumber, p.stationType, p.frequency, p.antennaAzimuth, p.antennaType].map(value => String(value ?? '')).join('|')
     if (seen.has(key)) return
     seen.add(key)
     unique.push(feature)
@@ -72,7 +70,9 @@ function collectFilterOptions(map: MapLibreMap): FilterOptions {
 
   return {
     products: sortedOptions(products),
-    frequencyBands: Array.from(frequencyBands).sort((a, b) => a - b).slice(0, 40),
+    frequencyBands: Array.from(frequencyBands)
+      .sort((a, b) => a - b)
+      .slice(0, 40),
     antennaTypes: sortedOptions(antennaTypes),
     licensees: sortedOptions(licensees).slice(0, 250),
   }
@@ -116,7 +116,11 @@ function parseFrequencyFilter(input: string): any[] | null {
   const multiplier = unit === 'ghz' ? 1e9 : unit === 'mhz' ? 1e6 : unit === 'khz' ? 1e3 : 1
   const hz = value * multiplier
   if (unit === 'ghz' && Number.isInteger(value)) {
-    return ['any', ['!', ['has', 'frequencyHz']], ['all', ['>=', ['to-number', ['get', 'frequencyHz']], hz], ['<', ['to-number', ['get', 'frequencyHz']], hz + 1e9]]]
+    return [
+      'any',
+      ['!', ['has', 'frequencyHz']],
+      ['all', ['>=', ['to-number', ['get', 'frequencyHz']], hz], ['<', ['to-number', ['get', 'frequencyHz']], hz + 1e9]],
+    ]
   }
   return ['any', ['!', ['has', 'frequencyHz']], ['==', ['to-number', ['get', 'frequencyHz']], hz]]
 }
@@ -131,14 +135,22 @@ function productColourExpression(): any[] {
   const product = ['downcase', ['to-string', ['get', 'productDescription']]]
   return [
     'case',
-    ['>=', ['index-of', 'fixed', product], 0], '#000000',
-    ['>=', ['index-of', 'business radio', product], 0], '#277da1',
-    ['>=', ['index-of', 'cellular', product], 0], '#7b2cbf',
-    ['>=', ['index-of', 'telemetry', product], 0], '#6a994e',
-    ['>=', ['index-of', 'programme', product], 0], '#f77f00',
-    ['>=', ['index-of', 'satellite', product], 0], '#2a9d8f',
-    ['>=', ['index-of', 'maritime', product], 0], '#0081a7',
-    ['>=', ['index-of', 'aeronautical', product], 0], '#bc4749',
+    ['>=', ['index-of', 'fixed', product], 0],
+    '#000000',
+    ['>=', ['index-of', 'business radio', product], 0],
+    '#277da1',
+    ['>=', ['index-of', 'cellular', product], 0],
+    '#7b2cbf',
+    ['>=', ['index-of', 'telemetry', product], 0],
+    '#6a994e',
+    ['>=', ['index-of', 'programme', product], 0],
+    '#f77f00',
+    ['>=', ['index-of', 'satellite', product], 0],
+    '#2a9d8f',
+    ['>=', ['index-of', 'maritime', product], 0],
+    '#0081a7',
+    ['>=', ['index-of', 'aeronautical', product], 0],
+    '#bc4749',
     '#1d4ed8',
   ]
 }
@@ -147,14 +159,22 @@ function licenceColourExpression(property: 'licensee'): any[] {
   return [
     'match',
     ['downcase', ['to-string', ['get', property]]],
-    'vodafone limited', '#e60000',
-    'telefonica uk limited', '#0050ff',
-    'ee limited', '#00a859',
-    'mobile broadband network limited', '#7b2cbf',
-    'network rail infrastructure limited', '#f77f00',
-    'arqiva limited', '#006d77',
-    'british telecommunications public limited company', '#5514B4',
-    'airwave solutions limited', '#bc4749',
+    'vodafone limited',
+    '#e60000',
+    'telefonica uk limited',
+    '#0050ff',
+    'ee limited',
+    '#00a859',
+    'mobile broadband network limited',
+    '#7b2cbf',
+    'network rail infrastructure limited',
+    '#f77f00',
+    'arqiva limited',
+    '#006d77',
+    'british telecommunications public limited company',
+    '#5514B4',
+    'airwave solutions limited',
+    '#bc4749',
     '#54ff90',
   ]
 }
@@ -162,11 +182,7 @@ function licenceColourExpression(property: 'licensee'): any[] {
 // Popup HTML generators
 function esc(v: unknown): string {
   if (v == null) return ''
-  return String(v)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+  return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
 function row(label: string, value: string | null | undefined, mono = false): string {
@@ -180,12 +196,16 @@ function licenceChooserHTML(licences: Array<Record<string, unknown>>): string {
 <div class="wtr-popup">
   <p class="wtr-popup__licensee">${licences.length} licences at this location</p>
   <div class="wtr-popup__licence-list">
-    ${licences.map((p, index) => `
+    ${licences
+      .map(
+        (p, index) => `
       <button type="button" class="wtr-popup__licence-choice" data-wtr-licence-index="${index}">
         <span class="wtr-popup__choice-main">${esc(p.licenceNumber)} ${displayText(p.stationType) ? `(${esc(p.stationType)})` : ''}</span>
         <span class="wtr-popup__choice-sub">${esc(displayText(p.licensee) ?? 'Unknown holder')} ${formatHz(p.frequency) ? `- ${esc(formatHz(p.frequency))}` : ''}</span>
       </button>
-    `).join('')}
+    `,
+      )
+      .join('')}
   </div>
 </div>`
 }
@@ -300,13 +320,12 @@ function linkPopupHTML(p: Record<string, unknown>, geometryCoordinates?: GeoJSON
   const latA = finiteNumber(p.latA) ?? fallbackA?.[1]
   const lngB = finiteNumber(p.lngB) ?? fallbackB?.[0]
   const latB = finiteNumber(p.latB) ?? fallbackB?.[1]
-  const jumpButtons =
-    [lngA, latA, lngB, latB].every(Number.isFinite)
-      ? `<div class="wtr-popup__jump-buttons">
+  const jumpButtons = [lngA, latA, lngB, latB].every(Number.isFinite)
+    ? `<div class="wtr-popup__jump-buttons">
     <button type="button" class="wtr-popup__jump-btn" data-wtr-jump="a" data-lng="${esc(lngA)}" data-lat="${esc(latA)}">Jump to A</button>
     <button type="button" class="wtr-popup__jump-btn" data-wtr-jump="b" data-lng="${esc(lngB)}" data-lat="${esc(latB)}">Jump to B</button>
   </div>`
-      : ''
+    : ''
 
   return `
 <div class="wtr-popup">
@@ -336,4 +355,16 @@ function linkPopupHTML(p: Record<string, unknown>, geometryCoordinates?: GeoJSON
 </div>`
 }
 
-export { licencePopupHTML, linkPopupHTML, licenceChooserHTML, collectFilterOptions, uniqueLicenceFeatures, buildWtrFilter, hasActiveFilters, FilterSelect, selectLicence, productColourExpression, licenceColourExpression }
+export {
+  licencePopupHTML,
+  linkPopupHTML,
+  licenceChooserHTML,
+  collectFilterOptions,
+  uniqueLicenceFeatures,
+  buildWtrFilter,
+  hasActiveFilters,
+  FilterSelect,
+  selectLicence,
+  productColourExpression,
+  licenceColourExpression,
+}

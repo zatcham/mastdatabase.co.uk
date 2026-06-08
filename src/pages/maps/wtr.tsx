@@ -30,11 +30,7 @@ export default function WtrMapPage({ location }: PageProps) {
   }, [])
 
   return (
-    <Layout
-      location={location}
-      title="UK wtr map"
-      description="Visualise radio licences across the United Kingdom."
-    >
+    <Layout location={location} title="UK wtr map" description="Visualise radio licences across the United Kingdom.">
       <ErrorBoundaryContext>
         <Hero firstElement size="large" color={Colors.primaryRed}>
           <h1 className="text-shout">UK WTR map</h1>
@@ -54,15 +50,15 @@ export default function WtrMapPage({ location }: PageProps) {
         <Section>
           <h2 className="text-loud">What is the Wireless Telegraphy Register?</h2>
           <p className="text-speak">
-            The Wireless Telegraphy Register (WTR) is a public register maintained by Ofcom of all UK radio licences. It covers
-            everything from mobile base stations and microwave links to satellite uplinks and amateur radio stations.
+            The Wireless Telegraphy Register (WTR) is a public register maintained by Ofcom of all UK radio licences. It covers everything from
+            mobile base stations and microwave links to satellite uplinks and amateur radio stations.
           </p>
           <p className="text-speak">
             Our map renders the full dataset; over 100,000 licence points and thousands of point-to-point fixed links.
           </p>
           <p className="text-speak" style={{ marginBottom: 24 }}>
-            Zoom in past level 9 to see licence pins. Click any pin for full licence details. P2P microwave links are shown as
-            orange lines. Use the filter button to narrow down by frequency.
+            Zoom in past level 9 to see licence pins. Click any pin for full licence details. P2P microwave links are shown as orange lines. Use
+            the filter button to narrow down by frequency.
           </p>
         </Section>
 

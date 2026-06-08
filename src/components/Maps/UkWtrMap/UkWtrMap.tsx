@@ -5,10 +5,21 @@ import type { Map as MapLibreMap } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './UkWtrMap.less'
 import type { WtrFilters, FilterOptions } from './types'
-import { licencePopupHTML, linkPopupHTML, licenceChooserHTML, collectFilterOptions, uniqueLicenceFeatures, buildWtrFilter, hasActiveFilters, FilterSelect, selectLicence, productColourExpression, licenceColourExpression } from './WtrMapFuncts'
+import {
+  licencePopupHTML,
+  linkPopupHTML,
+  licenceChooserHTML,
+  collectFilterOptions,
+  uniqueLicenceFeatures,
+  buildWtrFilter,
+  hasActiveFilters,
+  FilterSelect,
+  selectLicence,
+  productColourExpression,
+  licenceColourExpression,
+} from './WtrMapFuncts'
 
-const API_BASE: string =
-  (typeof process !== 'undefined' && (process.env.GATSBY_WTR_API_URL)) || 'http://localhost:8080'
+const API_BASE: string = (typeof process !== 'undefined' && process.env.GATSBY_WTR_API_URL) || 'http://localhost:8080'
 
 const emptyFilters: WtrFilters = {
   product: '',
@@ -31,7 +42,7 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
   const mapRef = useRef<MapLibreMap | null>(null)
   const selectedLicenceRef = useRef('')
   const activePopupRef = useRef<maplibregl.Popup | null>(null)
-  const stackedLicencesRef = useRef<Array<{ props: Record<string, unknown>, lngLat: [number, number] }>>([])
+  const stackedLicencesRef = useRef<Array<{ props: Record<string, unknown>; lngLat: [number, number] }>>([])
   const [filters, setFilters] = useState<WtrFilters>(emptyFilters)
   const [filterOptions, setFilterOptions] = useState<FilterOptions>(emptyOptions)
   const [filterOpen, setFilterOpen] = useState(false)
@@ -59,8 +70,7 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
             type: 'raster',
             tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             tileSize: 256,
-            attribution:
-              '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Ofcom WTR © Ofcom (OGL)',
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Ofcom WTR © Ofcom (OGL)',
             maxzoom: 19,
           },
         },
@@ -256,7 +266,7 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
           const geom = feature.geometry as GeoJSON.Point
           return {
             props: feature.properties as Record<string, unknown>,
-            lngLat: Array.isArray(geom.coordinates) ? geom.coordinates as [number, number] : lngLat,
+            lngLat: Array.isArray(geom.coordinates) ? (geom.coordinates as [number, number]) : lngLat,
           }
         })
         activePopupRef.current?.remove()
@@ -324,12 +334,24 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
       if (features.length === 0) selectLicence(map, selectedLicenceRef, '')
     })
 
-    map.on('mouseenter', 'wtr-clusters', () => { map.getCanvas().style.cursor = 'pointer' })
-    map.on('mouseleave', 'wtr-clusters', () => { map.getCanvas().style.cursor = '' })
-    map.on('mouseenter', 'wtr-licences', () => { map.getCanvas().style.cursor = 'pointer' })
-    map.on('mouseleave', 'wtr-licences', () => { map.getCanvas().style.cursor = '' })
-    map.on('mouseenter', 'wtr-links', () => { map.getCanvas().style.cursor = 'pointer' })
-    map.on('mouseleave', 'wtr-links', () => { map.getCanvas().style.cursor = '' })
+    map.on('mouseenter', 'wtr-clusters', () => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'wtr-clusters', () => {
+      map.getCanvas().style.cursor = ''
+    })
+    map.on('mouseenter', 'wtr-licences', () => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'wtr-licences', () => {
+      map.getCanvas().style.cursor = ''
+    })
+    map.on('mouseenter', 'wtr-links', () => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'wtr-links', () => {
+      map.getCanvas().style.cursor = ''
+    })
 
     fetch(`${API_BASE}/api/v1/meta`)
       .then(r => r.json())
@@ -368,7 +390,11 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
     if (map.getLayer('wtr-cluster-count')) map.setLayoutProperty('wtr-cluster-count', 'visibility', clusterVis)
 
     const linkColour = (filters.colourBy === 'licensee' ? licenceColourExpression('licensee') : productColourExpression()) as any
-    map.setPaintProperty('wtr-licences', 'circle-color', (filters.colourBy === 'licensee' ? licenceColourExpression('licensee') : productColourExpression()) as any)
+    map.setPaintProperty(
+      'wtr-licences',
+      'circle-color',
+      (filters.colourBy === 'licensee' ? licenceColourExpression('licensee') : productColourExpression()) as any,
+    )
     map.setPaintProperty('wtr-links', 'line-color', linkColour)
     if (map.getLayer('wtr-links-dashed')) map.setPaintProperty('wtr-links-dashed', 'line-color', linkColour)
   }, [filters, mapLoaded])
@@ -378,11 +404,7 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
       <div ref={containerRef} className="wtr-map-canvas" />
 
       <div className="wtr-status-bar">
-        {tooZoomedOut && (
-          <div className="wtr-status-bar__message wtr-status-bar__message--warn">
-            ⚠ Zoom in past level 9 to see data
-          </div>
-        )}
+        {tooZoomedOut && <div className="wtr-status-bar__message wtr-status-bar__message--warn">⚠ Zoom in past level 9 to see data</div>}
         {loading && (
           <div className="wtr-status-bar__message wtr-status-bar__message--loading">
             <span className="wtr-status-bar__spinner" />
@@ -414,7 +436,9 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
             options={filterOptions.frequencyBands.map(b => `${b} GHz`)}
             onChange={frequencyBand => setFilters(f => ({ ...f, frequencyBand }))}
           />
-          <label className="wtr-filter-panel__label" htmlFor="wtr-freq-filter">Frequency</label>
+          <label className="wtr-filter-panel__label" htmlFor="wtr-freq-filter">
+            Frequency
+          </label>
           <input
             id="wtr-freq-filter"
             className="wtr-filter-panel__input"
@@ -438,7 +462,9 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
             options={filterOptions.licensees}
             onChange={licensee => setFilters(f => ({ ...f, licensee }))}
           />
-          <label className="wtr-filter-panel__label" htmlFor="wtr-colour-filter">Dot colours</label>
+          <label className="wtr-filter-panel__label" htmlFor="wtr-colour-filter">
+            Dot colours
+          </label>
           <select
             id="wtr-colour-filter"
             className="wtr-filter-panel__input"
@@ -457,12 +483,7 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
       )}
 
       <div className="wtr-controls">
-        <button
-          className="wtr-control-btn"
-          title="Filter licences"
-          aria-label="Filter licences"
-          onClick={() => setFilterOpen(o => !o)}
-        >
+        <button className="wtr-control-btn" title="Filter licences" aria-label="Filter licences" onClick={() => setFilterOpen(o => !o)}>
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path
               fill="currentColor"
@@ -493,4 +514,3 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
 })
 
 export default WtrMap
-
