@@ -4,7 +4,7 @@ import { Protocol } from 'pmtiles'
 import type { Map as MapLibreMap } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './UkWtrMap.less'
-import type { WtrFilters, FilterOptions } from './types'
+import type { WtrFilters, FilterOptions, WtrMeta } from './types'
 import {
   licencePopupHTML,
   linkPopupHTML,
@@ -19,15 +19,13 @@ import {
   licenceColourExpression,
 } from './WtrMapFuncts'
 
-const API_BASE: string = (typeof process !== 'undefined' && process.env.GATSBY_WTR_API_URL) || 'http://localhost:8080'
-
 const emptyFilters: WtrFilters = {
   product: '',
   frequency: '',
   frequencyBand: '',
   antennaType: '',
   licensee: '',
-  colourBy: 'product',
+  colourBy: 'licensee',
 }
 
 const emptyOptions: FilterOptions = {
@@ -48,8 +46,10 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
   const [filterOpen, setFilterOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [mapLoaded, setMapLoaded] = useState(false)
-  const [dataVersion, setDataVersion] = useState<string | null>(null)
+  const [wtrMeta, setWtrMeta] = useState<WtrMeta | null>(null)
   const [tooZoomedOut, setTooZoomedOut] = useState(false)
+
+  const wtrFileName = 'wtr-080626.pmtiles'
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -96,7 +96,8 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
     // ;(window as any).__wtrMap = map
 
     map.on('load', () => {
-      const pmtilesUrl = `pmtiles://${API_BASE}/wtr.pmtiles`
+      const origin = typeof window !== 'undefined' ? window.location.origin : ''
+      const pmtilesUrl = `pmtiles://${origin}/${wtrFileName}`
 
       map.addSource('wtr', { type: 'vector', url: pmtilesUrl })
 
@@ -353,9 +354,9 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
       map.getCanvas().style.cursor = ''
     })
 
-    fetch(`${API_BASE}/api/v1/meta`)
+    fetch('/wtr-meta.json')
       .then(r => r.json())
-      .then((d: { dataVersion: string }) => setDataVersion(d.dataVersion))
+      .then((d: WtrMeta) => setWtrMeta(d))
       .catch(() => {})
 
     return () => {
@@ -411,7 +412,12 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
             Loading…
           </div>
         )}
-        {dataVersion && <div className="wtr-status-bar__version">WTR {dataVersion}</div>}
+        {wtrMeta && (
+          <div className="wtr-status-bar__version">
+            {wtrMeta.recordCount.toLocaleString()} licences · {wtrMeta.linkCount.toLocaleString()} links · updated{' '}
+            {new Date(wtrMeta.lastUpdated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </div>
+        )}
       </div>
 
       {filterOpen && (

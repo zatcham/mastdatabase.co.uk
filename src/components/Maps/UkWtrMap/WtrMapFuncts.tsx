@@ -175,7 +175,7 @@ function licenceColourExpression(property: 'licensee'): any[] {
     '#5514B4',
     'airwave solutions limited',
     '#bc4749',
-    '#54ff90',
+    '#00b13f',
   ]
 }
 

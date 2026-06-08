@@ -16,4 +16,11 @@ type FilterOptions = {
   licensees: string[]
 }
 
-export type { WtrFilters, FilterOptions }
+type WtrMeta = {
+  dataVersion: string
+  lastUpdated: string
+  recordCount: number
+  linkCount: number
+}
+
+export type { WtrFilters, FilterOptions, WtrMeta }
