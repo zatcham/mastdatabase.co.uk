@@ -35,7 +35,8 @@ const emptyOptions: FilterOptions = {
   licensees: [],
 }
 
-const tilesUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8080/wtr.pmtiles' : 'https://osm-assets.coveragetiles.com/ofcom-wireless.pmtiles'
+const tilesUrl =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:8080/wtr.pmtiles' : 'https://osm-assets.coveragetiles.com/ofcom-wireless.pmtiles'
 
 const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
   const containerRef = useRef<HTMLDivElement>(null)
