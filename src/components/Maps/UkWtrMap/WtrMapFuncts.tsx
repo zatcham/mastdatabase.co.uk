@@ -302,7 +302,7 @@ function licenceChooserHTML(licences: ReadonlyArray<Record<string, unknown>>): s
 
 function licencePopupHTML(p: Record<string, unknown>): string {
   const licNo = String(p.licenceNumber ?? '')
-  const licenceType = getProductTag(String(p.productDescription ?? ''));
+  const licenceType = getProductTag(String(p.productDescription ?? ''))
   return `
 <div class="wtr-popup">
   <p class="wtr-popup__licensee">${p.licensee ? esc(p.licensee) : '<em>Unknown licensee</em>'}</p>
