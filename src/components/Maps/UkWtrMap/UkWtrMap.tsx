@@ -35,6 +35,8 @@ const emptyOptions: FilterOptions = {
   licensees: [],
 }
 
+const tilesUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8080/wtr.pmtiles' : 'https://osm-assets.coveragetiles.com/ofcom-wireless.pmtiles'
+
 const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
@@ -48,8 +50,6 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
   const [mapLoaded, setMapLoaded] = useState(false)
   const [wtrMeta, setWtrMeta] = useState<WtrMeta | null>(null)
   const [tooZoomedOut, setTooZoomedOut] = useState(false)
-
-  const wtrFileName = 'wtr-080626.pmtiles'
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -96,8 +96,7 @@ const WtrMap = forwardRef<MapLibreMap>(function WtrMap(_, fwdRef) {
     // ;(window as any).__wtrMap = map
 
     map.on('load', () => {
-      const origin = typeof window !== 'undefined' ? window.location.origin : ''
-      const pmtilesUrl = `pmtiles://${origin}/${wtrFileName}`
+      const pmtilesUrl = `pmtiles://${tilesUrl}`
 
       map.addSource('wtr', { type: 'vector', url: pmtilesUrl })
 
