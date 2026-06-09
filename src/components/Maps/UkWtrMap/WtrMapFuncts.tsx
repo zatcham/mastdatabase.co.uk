@@ -247,6 +247,19 @@ function wtrUrl(licNo: string): string {
   return `https://www.ofcom.org.uk/spectrum/frequencies/spectrum-information-portal?licenceNumber=${encodeURIComponent(licNo)}`
 }
 
+function getProductTag(x: string): string {
+  const product = x.toLowerCase()
+  if (product.includes('br tech')) return 'Business Radio'
+  if (product.includes('ais')) return 'Maritime'
+  if (product.includes('csr')) return 'Maritime'
+  if (product.includes('maritime')) return 'Maritime'
+  if (product.includes('fixed links')) return 'P2P Link'
+  if (product.includes('gnss')) return 'GNSS'
+  if (product.includes('satellite')) return 'Satellite'
+  if (product.includes('scanning telemetry')) return 'Telemetry'
+  if (product.includes('shared access')) return 'Cellular'
+}
+
 function basePopupRows(p: Record<string, unknown>): string {
   return [
     row('Licence no.', String(p.licenceNumber ?? ''), true),
@@ -289,10 +302,12 @@ function licenceChooserHTML(licences: ReadonlyArray<Record<string, unknown>>): s
 
 function licencePopupHTML(p: Record<string, unknown>): string {
   const licNo = String(p.licenceNumber ?? '')
+  const licenceType = getProductTag(String(p.productDescription ?? ''));
   return `
 <div class="wtr-popup">
   <p class="wtr-popup__licensee">${p.licensee ? esc(p.licensee) : '<em>Unknown licensee</em>'}</p>
   <dl class="wtr-popup__details">${basePopupRows(p)}</dl>
+    <span class="wtr-popup__badge wtr-popup__badge--link">${licenceType}</span>
   <a class="wtr-popup__wtr-link" href="${esc(wtrUrl(licNo))}" target="_blank" rel="noopener noreferrer">View on Ofcom WTR ↗</a>
 </div>`
 }
