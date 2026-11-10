@@ -1036,9 +1036,9 @@ export const AllStreetworksPromoters: IOneNetworkStreetworksPromoter[] = [
     category: 'Fixed broadband',
     icon: {
       text: 'DIGI',
-      type: 'digi'
-    }
-  }
+      type: 'digi',
+    },
+  },
 ]
 
 export const promoterIds: readonly string[] = AllStreetworksPromoters.map(p => p.id)
